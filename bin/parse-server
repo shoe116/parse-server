@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 var express = require('express');
 var ParseServer = require("../lib/index").ParseServer;
+var CloudCode = require("../lib/CloudCode");
 
 var app = express();
+var cloud = new CloudCode("Asia/Tokyo");
 
 var options = {};
 if (process.env.PARSE_SERVER_OPTIONS) {
@@ -35,8 +37,14 @@ if (process.env.PARSE_SERVER_OPTIONS) {
 var mountPath = process.env.PARSE_SERVER_MOUNT_PATH || "/";
 var api = new ParseServer(options);
 app.use(mountPath, api);
-
 var port = process.env.PORT || 1337;
 app.listen(port, function() {
   console.log('parse-server-example running on http://localhost:'+ port + mountPath);
+  cloud.putJob("hello", null);
+  cloud.addCron("hello", "* * * * *");
+  cloud.start();
+
 });
+
+
+
